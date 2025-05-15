@@ -2,15 +2,15 @@ import nmap
 import socket
 import requests
 
-# Manually specify the path to nmap.exe
+# Manually specify the path to nmap.exe (adjust if necessary)
 nmap_path = r"C:\Program Files (x86)\Nmap\nmap.exe"  # Update this path if necessary
 
 def scan_ports(target):
     print(f"[+] Scanning ports on {target}...\n")
     nm = nmap.PortScanner()
 
-    # Specify nmap executable path during the initialization
-    nm._nmap_exec = nmap_path  # This is how we set the executable path
+    # Specify nmap executable path during initialization
+    nm._nmap_exec = nmap_path  # Set the nmap executable path
 
     # Scan ports 1-1024 to cover common ports
     nm.scan(target, arguments='-T4 -p 1-1024')  # Fast scan over common ports
@@ -33,7 +33,7 @@ def grab_banner(ip, port):
         banner = sock.recv(1024).decode(errors="ignore")
         print(f"    Banner: {banner.strip()}")
         search_cve(banner.strip())
-        check_http_error_code(banner.strip(), ip)  # Check for specific HTTP error codes
+        check_http_error_code(banner.strip())  # Check for specific HTTP error codes
         sock.close()
     except:
         pass
@@ -43,12 +43,8 @@ def search_cve(banner):
         return
     print("    [+] Checking for known CVEs...")
     try:
-        # Check for banner based on software name (server type)
-        if "sky_router" in banner.lower():  # Example for a router (can be expanded)
-            query = "sky_router"
-        else:
-            query = banner.split('\n')[0][:80]  # Trim long banners for better results
-
+        # Query based on a broad search for software or device banners
+        query = banner.split('\n')[0][:80]  # Trim banner to first line for better results
         url = f"https://cve.circl.lu/api/search/{query}"
         r = requests.get(url, timeout=5)
         data = r.json()
@@ -60,7 +56,7 @@ def search_cve(banner):
     except Exception as e:
         print(f"      [!] CVE check failed (network or API error): {e}")
 
-def check_http_error_code(banner, ip):
+def check_http_error_code(banner):
     # Handle common HTTP error codes to suggest vulnerabilities
     if '400 Bad Request' in banner:
         print(f"      [!] Possible vulnerability due to bad request error (400). Check input validation.")
@@ -70,6 +66,12 @@ def check_http_error_code(banner, ip):
         print(f"      [!] This might indicate outdated or exposed services.")
     elif '500 Internal Server Error' in banner:
         print(f"      [!] Check server for possible misconfigurations or outdated software.")
+    elif '502 Bad Gateway' in banner:
+        print(f"      [!] Potential misconfiguration in reverse proxy or gateway.")
+    elif '503 Service Unavailable' in banner:
+        print(f"      [!] Check if the service is overwhelmed or misconfigured.")
+    elif '504 Gateway Timeout' in banner:
+        print(f"      [!] Network issue or service timeout detected.")
 
 if __name__ == "__main__":
     target_ip = input("Enter IP address to scan: ").strip()
