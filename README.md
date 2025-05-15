@@ -21,22 +21,16 @@ Python 3.7+ (Recommended)
 # Installation
 Clone the repository:
 
-bash
-Copy
-Edit
+bash: 
 git clone https://github.com/DLUXC/VulnScanner.git
 cd VulnScanner
 Install the necessary dependencies:
 
-bash
-Copy
-Edit
+bash:
 pip install -r requirements.txt
 (Optional) If you want to run the script in a virtual environment:
 
-bash
-Copy
-Edit
+bash:
 python -m venv venv
 source venv/bin/activate   # On Windows, use venv\Scripts\activate
 pip install -r requirements.txt
@@ -44,17 +38,13 @@ Usage
 Running the Scanner
 To run the scanner, execute the following command in your terminal:
 
-bash
-Copy
-Edit
+bash:
 python Scanner.py <target_url_or_ip> [options]
 Arguments:
 <target_url_or_ip>: The URL or IP address of the target system that you want to scan.
 
 # Example:
-bash
-Copy
-Edit
+bash:
 python Scanner.py http://example.com
 Options:
 -h, --help: Show help and usage information.
@@ -67,9 +57,7 @@ Options:
 
 # Example with authentication:
 
-bash
-Copy
-Edit
+bash:
 python Scanner.py http://example.com -u admin -p password123
 Output
 The script will provide output on the vulnerabilities it has detected, along with a description and severity level where applicable. The results are displayed in the terminal.
